@@ -11,3 +11,4 @@ torch
 pypdf
 python-dotenv
 docx2txt
+langchain-huggingface
