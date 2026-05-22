@@ -3,21 +3,28 @@ from langchain_community.document_loaders import (
     TextLoader,
     Docx2txtLoader
 )
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
-from langchain_classic.chains.retrieval_qa.base import RetrievalQA
+from langchain.chains import RetrievalQA
+
 from dotenv import load_dotenv
+
 import streamlit as st
 import tempfile
 import os
 
 load_dotenv()
 
-st.set_page_config(page_title="RAG Document QA Bot")
+st.set_page_config(
+    page_title="RAG Document QA Bot",
+    page_icon="📄",
+    layout="wide"
+)
 
-st.title("📄 RAG QA Bot")
+st.title("📄 RAG Document QA Bot")
 
 uploaded_files = st.file_uploader(
     "Upload PDF, DOCX, TXT Files",
@@ -29,79 +36,116 @@ all_documents = []
 
 if uploaded_files:
 
-    for uploaded_file in uploaded_files:
+    with st.spinner("Processing documents..."):
 
-        suffix = "." + uploaded_file.name.split(".")[-1]
+        for uploaded_file in uploaded_files:
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
-            tmp_file.write(uploaded_file.read())
-            temp_file_path = tmp_file.name
+            suffix = "." + uploaded_file.name.split(".")[-1]
 
-        if uploaded_file.name.endswith(".pdf"):
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=suffix
+            ) as tmp_file:
 
-            loader = PyPDFLoader(temp_file_path)
-            docs = loader.load()
+                tmp_file.write(uploaded_file.read())
 
-            for doc in docs:
-                doc.metadata["source_file"] = uploaded_file.name
-                doc.metadata["page_number"] = doc.metadata.get("page", 0) + 1
+                temp_file_path = tmp_file.name
 
-            all_documents.extend(docs)
+            if uploaded_file.name.endswith(".pdf"):
 
-        elif uploaded_file.name.endswith(".txt"):
+                loader = PyPDFLoader(temp_file_path)
 
-            loader = TextLoader(temp_file_path, encoding="utf-8")
-            docs = loader.load()
+                docs = loader.load()
 
-            for doc in docs:
-                doc.metadata["source_file"] = uploaded_file.name
-                doc.metadata["page_number"] = "TXT File"
+                for doc in docs:
 
-            all_documents.extend(docs)
+                    doc.metadata["source_file"] = uploaded_file.name
 
-        elif uploaded_file.name.endswith(".docx"):
+                    doc.metadata["page_number"] = (
+                        doc.metadata.get("page", 0) + 1
+                    )
 
-            loader = Docx2txtLoader(temp_file_path)
-            docs = loader.load()
+                all_documents.extend(docs)
 
-            for doc in docs:
-                doc.metadata["source_file"] = uploaded_file.name
-                doc.metadata["page_number"] = "DOCX File"
+            elif uploaded_file.name.endswith(".txt"):
 
-            all_documents.extend(docs)
+                loader = TextLoader(
+                    temp_file_path,
+                    encoding="utf-8"
+                )
 
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=100
-    )
+                docs = loader.load()
 
-    chunks = text_splitter.split_documents(all_documents)
+                for doc in docs:
 
-    embedding = HuggingFaceEmbeddings()
+                    doc.metadata["source_file"] = uploaded_file.name
 
-    vector_store = FAISS.from_documents(chunks, embedding)
+                    doc.metadata["page_number"] = "TXT File"
 
-    retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+                all_documents.extend(docs)
 
-    llm = ChatGroq(
-        model="llama-3.1-8b-instant",
-        api_key=os.getenv("GROQ_API_KEY")
-    )
+            elif uploaded_file.name.endswith(".docx"):
 
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        retriever=retriever,
-        chain_type="stuff",
-        return_source_documents=True
-    )
+                loader = Docx2txtLoader(temp_file_path)
+
+                docs = loader.load()
+
+                for doc in docs:
+
+                    doc.metadata["source_file"] = uploaded_file.name
+
+                    doc.metadata["page_number"] = "DOCX File"
+
+                all_documents.extend(docs)
+
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=100
+        )
+
+        chunks = text_splitter.split_documents(
+            all_documents
+        )
+
+        embedding = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
+
+        vector_store = FAISS.from_documents(
+            chunks,
+            embedding
+        )
+
+        retriever = vector_store.as_retriever(
+            search_kwargs={"k": 3}
+        )
+
+        llm = ChatGroq(
+            model="llama-3.1-8b-instant",
+            api_key=os.getenv("GROQ_API_KEY")
+        )
+
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=llm,
+            retriever=retriever,
+            chain_type="stuff",
+            return_source_documents=True
+        )
+
+    st.success("Documents processed successfully")
 
     query = st.text_input("Ask Question")
 
     if query:
 
-        result = qa_chain.invoke({"query": query})
+        with st.spinner("Generating answer..."):
+
+            result = qa_chain.invoke({
+                "query": query
+            })
 
         st.subheader("Answer")
+
         st.write(result["result"])
 
         st.subheader("Sources")
@@ -110,11 +154,22 @@ if uploaded_files:
 
         for doc in result["source_documents"]:
 
-            source = doc.metadata.get("source_file")
-            page = doc.metadata.get("page_number")
+            source = doc.metadata.get(
+                "source_file",
+                "Unknown File"
+            )
+
+            page = doc.metadata.get(
+                "page_number",
+                "Unknown Page"
+            )
 
             key = f"{source}-{page}"
 
             if key not in shown:
-                st.write(f"File: {source} | Page: {page}")
+
+                st.write(
+                    f"File: {source} | Page: {page}"
+                )
+
                 shown.add(key)
