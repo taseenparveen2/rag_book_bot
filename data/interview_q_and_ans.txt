@@ -1,0 +1,106 @@
+
+1. Tell me about yourself.
+
+Answer:
+“My name is Rahul. I recently completed my Bachelor’s degree in Computer Science. I have strong interest in Artificial Intelligence and software development. I worked on projects using Python, Machine Learning, and web technologies. I am a quick learner, passionate about technology, and looking for an opportunity to grow my skills in a professional environment.”
+
+--------------------------------------------------
+
+2. Why do you want to join our company?
+
+Answer:
+“I want to join your company because it provides a great learning environment and opportunities to work on real-world projects. I believe my skills and enthusiasm will help me contribute positively while also improving professionally.”
+
+--------------------------------------------------
+
+3. What are your strengths?
+
+Answer:
+“My strengths are problem-solving, adaptability, teamwork, and quick learning. I can learn new technologies quickly and work well under pressure.”
+
+--------------------------------------------------
+
+4. What is your weakness?
+
+Answer:
+“Sometimes I focus too much on details to make my work perfect, but I am learning to balance quality and time management.”
+
+--------------------------------------------------
+
+5. Why should we hire you?
+
+Answer:
+“You should hire me because I am motivated, eager to learn, and ready to take responsibility. I have good technical knowledge, communication skills, and the ability to adapt quickly to new challenges.”
+
+--------------------------------------------------
+
+6. What are your career goals?
+
+Answer:
+“My short-term goal is to gain practical experience and improve my technical skills. My long-term goal is to become an experienced software engineer and work on impactful technology solutions.”
+
+--------------------------------------------------
+
+7. Explain a project you worked on.
+
+Answer:
+“I developed a Library Management System using Python and SQL. The system allowed users to issue, return, and search books efficiently. Through this project, I improved my programming, database, and debugging skills.”
+
+--------------------------------------------------
+
+8. What is Python?
+
+Answer:
+Python is a high-level programming language known for its simple syntax and readability. It is widely used in web development, data science, automation, AI, and Machine Learning.
+
+--------------------------------------------------
+
+9. Difference between list and tuple in Python?
+
+Answer:
+- List is mutable, meaning values can be changed.
+- Tuple is immutable, meaning values cannot be changed after creation.
+- Lists use square brackets [], while tuples use parentheses ().
+
+--------------------------------------------------
+
+10. What is Machine Learning?
+
+Answer:
+Machine Learning is a branch of AI where systems learn patterns from data and make predictions or decisions without explicit programming.
+
+--------------------------------------------------
+
+11. What is the difference between supervised and unsupervised learning?
+
+Answer:
+- Supervised learning uses labeled data for training.
+- Unsupervised learning uses unlabeled data to find hidden patterns.
+
+--------------------------------------------------
+
+12. What are your hobbies?
+
+Answer:
+“My hobbies include learning new technologies, watching tech videos, reading about AI trends, and improving my coding skills.”
+
+--------------------------------------------------
+
+13. How do you handle pressure?
+
+Answer:
+“I stay calm, prioritize tasks, and focus on solving problems step by step. I believe pressure helps improve productivity and learning.”
+
+--------------------------------------------------
+
+14. Are you comfortable working in a team?
+
+Answer:
+“Yes, I enjoy teamwork because it helps share ideas, improve communication, and complete tasks efficiently.”
+
+--------------------------------------------------
+
+15. Do you have any questions for us?
+
+Answer:
+“Yes, I would like to know about the technologies the team works with and the learning opportunities available for freshers.”
