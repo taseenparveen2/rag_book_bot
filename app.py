@@ -5,7 +5,7 @@ from langchain_community.document_loaders import (
 )
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQA
@@ -19,12 +19,12 @@ import os
 load_dotenv()
 
 st.set_page_config(
-    page_title="RAG Document QA Bot",
+    page_title="RAG QA Bot",
     page_icon="📄",
     layout="wide"
 )
 
-st.title("📄 RAG Document QA Bot")
+st.title("📄 RAG QA Bot")
 
 uploaded_files = st.file_uploader(
     "Upload PDF, DOCX, TXT Files",
