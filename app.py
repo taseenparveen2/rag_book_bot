@@ -98,7 +98,7 @@ if uploaded_files:
                 all_documents.extend(docs)
 
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=500,
+            chunk_size=300,
             chunk_overlap=100
         )
 
