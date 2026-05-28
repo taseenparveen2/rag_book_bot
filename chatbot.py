@@ -10,11 +10,11 @@ from langchain_groq import ChatGroq
 from langchain_classic.chains.retrieval_qa.base import RetrievalQA
 from dotenv import load_dotenv
 import os
-
+#loading env 
 load_dotenv()
 
 all_documents = []
-
+#the pdf or text file are stored in data file
 data_folder = "data"
 
 for file in os.listdir(data_folder):
@@ -49,25 +49,26 @@ for file in os.listdir(data_folder):
             doc.metadata["page_number"] = "DOCX File"
 
         all_documents.extend(docs)
-
+# defining the chunking size 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,
     chunk_overlap=100
 )
-
+# it will chunk docs or text or pdf 
 chunks = text_splitter.split_documents(all_documents)
-
+#embeddings 
 embedding = HuggingFaceEmbeddings()
-
+#stored in vectoe db
 vector_store = FAISS.from_documents(chunks, embedding)
-
+#retrieves the relevant info based on the query
 retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
+#groq model
 llm = ChatGroq(
     model="llama-3.1-8b-instant",
     api_key=os.getenv("GROQ_API_KEY")
 )
-
+# it will form as a chain 
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
     retriever=retriever,
@@ -76,11 +77,13 @@ qa_chain = RetrievalQA.from_chain_type(
 )
 
 while True:
+    # Take user question as input
     query = input("Ask: ")
-
+    #till exit comes
     if query.lower() == "exit":
         break
 
+    # Send query to QA chain and get response
     result = qa_chain.invoke({"query": query})
 
     print("\nAnswer:\n")
@@ -91,6 +94,8 @@ while True:
     shown = set()
 
     for doc in result["source_documents"]:
+
+        # Extract file name and page number
         source = doc.metadata.get("source_file")
         page = doc.metadata.get("page_number")
 
@@ -99,5 +104,5 @@ while True:
         if key not in shown:
             print(f"File: {source} | Page: {page}")
             shown.add(key)
-
+    # print the clear answer
     print("\n" + "=" * 50 + "\n")
