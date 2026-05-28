@@ -98,7 +98,8 @@ if uploaded_files:
         )
     st.success("Documents processed successfully")
     query = st.text_input("Ask Question")
-    if query:
+    submit_btn = st.button("Enter")
+    if submit_btn and query:
         with st.spinner("Generating answer..."):
             result = qa_chain.invoke({
                 "query": query
